@@ -1,11 +1,14 @@
 package tools.vitruv.methodologisttemplate.vsum;
 
 import tools.vitruv.framework.vsum.VirtualModelBuilder;
-import tools.vitruv.methodologisttemplate.model.model.ModelFactory;
 
 import java.nio.file.Path;
 import java.util.function.Consumer;
-import mir.reactions.model2Model2.Model2Model2ChangePropagationSpecification;
+
+import autosar.AutoSARFactory;
+import mir.reactions.autoSARToSimulink.AutoSARToSimulinkChangePropagationSpecification;
+import mir.reactions.simuLinkTOAutoSAR.SimuLinkTOAutoSARChangePropagationSpecification;
+import tools.vitruv.change.propagation.ChangePropagationMode;
 import tools.vitruv.change.testutils.TestUserInteraction;
 import tools.vitruv.framework.views.CommittableView;
 import tools.vitruv.framework.views.View;
@@ -15,22 +18,31 @@ import tools.vitruv.framework.vsum.VirtualModel;
 /**
  * This class provides an example how to define and use a VSUM.
  */
-public class VSUMExample {
+public class VSUMBrakeExample {
   public static void main(String[] args) {
     VirtualModel vsum = createDefaultVirtualModel();
+    vsum.setChangePropagationMode(ChangePropagationMode.TRANSITIVE_CYCLIC); 
+    
+
     CommittableView view = getDefaultView(vsum).withChangeDerivingTrait();
+    
+    
+
     modifyView(view, (CommittableView v) -> {
-      v.getRootObjects().add(ModelFactory.eINSTANCE.createSystem());
+      v.getRootObjects().add(AutoSARFactory.eINSTANCE.createAutoSARModel());
     });
+
+    
   }
 
   private static VirtualModel createDefaultVirtualModel() {
     return new VirtualModelBuilder()
         .withStorageFolder(Path.of("vsumexample"))
         .withUserInteractorForResultProvider(new TestUserInteraction.ResultProvider(new TestUserInteraction()))
-        .withChangePropagationSpecifications(new Model2Model2ChangePropagationSpecification())
+        .withChangePropagationSpecifications(new AutoSARToSimulinkChangePropagationSpecification(), new SimuLinkTOAutoSARChangePropagationSpecification())
         .buildAndInitialize();
   }
+
 
   private static View getDefaultView(VirtualModel vsum) {
     var selector = vsum.createSelector(ViewTypeFactory.createIdentityMappingViewType("default"));

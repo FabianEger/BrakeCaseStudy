@@ -9,17 +9,33 @@
    <extension point="org.eclipse.emf.ecore.generated_package">
       <!-- @generated model -->
       <package
-            uri="http://vitruv.tools/methodologisttemplate/model"
-            class="tools.vitruv.methodologisttemplate.model.model.ModelPackage"
-            genModel="src/main/ecore/model.genmodel"/>
+            uri="http://vitruv.tools/methodologisttemplate/autoSAR"
+            class="tools.vitruv.methodologisttemplate.model.autoSAR.autoSARPackage"
+            genModel="src/main/ecore/autoSAR.genmodel"/>
    </extension>
 
    <extension point="org.eclipse.emf.ecore.generated_package">
       <!-- @generated model2 -->
       <package
-            uri="http://vitruv.tools/methodologisttemplate/model2"
-            class="tools.vitruv.methodologisttemplate.model.model2.Model2Package"
-            genModel="src/main/ecore/model2.genmodel"/>
+            uri="http://vitruv.tools/methodologisttemplate/simuLink"
+            class="tools.vitruv.methodologisttemplate.model.simuLink.SimuLinkPackage"
+            genModel="src/main/ecore/simuLink.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated simuLink -->
+      <package
+            uri="http://vitruv.tools/methodologisttemplate/simulink"
+            class="simulink.SimuLinkPackage"
+            genModel="src/main/ecore/simuLink.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated autoSAR -->
+      <package
+            uri="http://vitruv.tools/methodologisttemplate/autosar"
+            class="autosar.AutoSARPackage"
+            genModel="src/main/ecore/autoSAR.genmodel"/>
    </extension>
 
 </plugin>
