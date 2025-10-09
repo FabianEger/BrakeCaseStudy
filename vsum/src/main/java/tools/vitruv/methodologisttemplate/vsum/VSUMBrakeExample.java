@@ -11,6 +11,7 @@ import org.eclipse.emf.common.util.URI;
 import autosar.*;
 import mir.reactions.autoSARToSimulink.AutoSARToSimulinkChangePropagationSpecification;
 import mir.reactions.simuLinkTOAutoSAR.SimuLinkTOAutoSARChangePropagationSpecification;
+import simulink.Block;
 import simulink.Parameter;
 import simulink.SimulinkModel;
 import simulink.SubSystem;
@@ -26,6 +27,7 @@ import tools.vitruv.framework.vsum.VirtualModel;
  */
 public class VSUMBrakeExample {
   public static void main(String[] args) {
+    
     Path storagePath = Path.of("vsumBrakeCaseStudy");
     VirtualModel vsum = createDefaultVirtualModel(storagePath);
     vsum.setChangePropagationMode(ChangePropagationMode.TRANSITIVE_CYCLIC); 
@@ -42,23 +44,57 @@ public class VSUMBrakeExample {
     addBrakeCaliperAsAutoSARSWComponent(vsum);
     addBrakePadAsAutoSARSWComponent(vsum);
     addSimulinkParameterToBrakeSystem(vsum);
+    addSimulinkParameterToBrakeDisc(vsum);
 
   }
 
 
   public static void addSimulinkParameterToBrakeSystem(VirtualModel vsum) {
     Parameter idParameter = simulink.SimuLinkFactory.eINSTANCE.createParameter();
-    idParameter.setName("9023");
+    idParameter.setName("id");
+    idParameter.setValue("9023");
     Parameter instanceName = simulink.SimuLinkFactory.eINSTANCE.createParameter();
-    instanceName.setName("autonomous_vehicle01");
+    instanceName.setName("instanceName");
+    instanceName.setValue("autonomous_vehicle01");
 
     CommittableView view = getDefaultView(vsum,List.of(SimulinkModel.class)).withChangeRecordingTrait();
     modifyView(view, (CommittableView v) -> {
 
       SubSystem brakeSystem = v.getRootObjects(SimulinkModel.class).iterator().next().getContains().stream()
                                   .filter(SubSystem.class::isInstance).map(SubSystem.class::cast).findFirst().orElseThrow();
+      
+      
+
       brakeSystem.getParameters().add(idParameter);
       brakeSystem.getParameters().add(instanceName);
+    });
+  }
+
+  public static void addSimulinkParameterToBrakeDisc(VirtualModel vsum) {
+    Parameter idParameter = simulink.SimuLinkFactory.eINSTANCE.createParameter();
+    idParameter.setName("id");
+    idParameter.setValue("1023");
+    Parameter oemNumbParameter = simulink.SimuLinkFactory.eINSTANCE.createParameter();
+    oemNumbParameter.setName("oemNumber");
+    oemNumbParameter.setValue("9811232");
+    Parameter diameterParameter = simulink.SimuLinkFactory.eINSTANCE.createParameter();
+    diameterParameter.setName("diameter");
+    diameterParameter.setType("mm");
+    diameterParameter.setValue("300");
+
+    CommittableView view = getDefaultView(vsum,List.of(SimulinkModel.class)).withChangeRecordingTrait();
+    modifyView(view, (CommittableView v) -> {
+
+      SubSystem brakeSystem = v.getRootObjects(SimulinkModel.class).iterator().next().getContains().stream()
+                                  .filter(SubSystem.class::isInstance).map(SubSystem.class::cast).findFirst().orElseThrow();
+      
+      Block brakeDisc = brakeSystem.getSubBlocks().stream()
+                                  .filter(Block.class::isInstance).map(Block.class::cast)
+                                  .filter(b -> b.getName().equals("BrakeDisc1.0")).findFirst().orElseThrow();
+                              
+      brakeDisc.getParameters().add(idParameter);
+      brakeDisc.getParameters().add(oemNumbParameter);
+      brakeDisc.getParameters().add(diameterParameter);
     });
   }
 
@@ -129,7 +165,7 @@ public class VSUMBrakeExample {
           modifyView(view, (CommittableView v) -> {
               v.registerRoot(
                       AutoSARFactory.eINSTANCE.createAutoSARModel(),
-                      URI.createFileURI(filePath.toString() + "/autosar.model"));
+                      URI.createFileURI(filePath.toString() + "/model/autosar.model"));
           });
 
   }
